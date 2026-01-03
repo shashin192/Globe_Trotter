@@ -1,8 +1,8 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const { testConnection } = require('./config/database');
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
@@ -28,13 +28,8 @@ app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB connected successfully'))
-.catch(err => console.error('MongoDB connection error:', err));
+// Test MySQL connection
+testConnection();
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -45,7 +40,7 @@ app.use('/api/activities', activityRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'GlobeTrotter API is running' });
+  res.json({ status: 'OK', message: 'WanderWise API is running with MySQL' });
 });
 
 // Error handling middleware
